@@ -1023,8 +1023,10 @@ impl<T, A: Allocator> Vec<T, A> {
 
     /// Shrinks the capacity of the vector as much as possible.
     ///
-    /// It will drop down as close as possible to the length but the allocator
-    /// may still inform the vector that there is space for a few more elements.
+    /// The behavior of this method depends on the allocator being used. If the allocator supports
+    /// in-place shrinking, some or all of the excess capacity may be returned to the allocator.
+    /// If not, this method may cause the vector's data to be copied to a new allocation with
+    /// exactly the correct size. See [`Allocator::shrink`] for more details.
     ///
     /// # Examples
     ///
@@ -1074,10 +1076,10 @@ impl<T, A: Allocator> Vec<T, A> {
 
     /// Converts the vector into [`Box<[T]>`][owned slice].
     ///
-    /// If the vector has excess capacity, its items will be moved into a
-    /// newly-allocated buffer with exactly the right capacity.
+    /// Before doing the conversion, this method calls [`shrink_to_fit`] to remove excess capacity.
     ///
     /// [owned slice]: Box
+    /// [`shrink_to_fit`]: Vec::shrink_to_fit
     ///
     /// # Examples
     ///
